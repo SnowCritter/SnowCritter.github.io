@@ -1,11 +1,17 @@
 body{
-    margin: 0;
+    margin: 5;
     background-color: black;
-    text-align: left;
+    text-align: right;
     color: aliceblue;
 }
 
 a{
     color: aliceblue;
     text-decoration: none;
+}
+
+.center{
+    color: aliceblue;
+    text-decoration: none;
+    text-align: left;
 }
