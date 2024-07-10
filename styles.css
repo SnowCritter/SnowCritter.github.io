@@ -5,14 +5,7 @@ body{
     color: aliceblue;
 }
 
-.button {
-
-    color: aliceblue;
-    
-    padding: 10px 20px;
-    
-    border: 1px solid black;
-    
-    cursor: pointer;
-    
-    }
+a{
+    color: inherit;
+    text-decoration: inherit;
+}
