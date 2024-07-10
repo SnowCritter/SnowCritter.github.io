@@ -7,13 +7,6 @@ body{
 }
 
 a{
-    text-align: right;
     color: aliceblue;
     text-decoration: none;
-}
-
-.center{
-    color: red;
-    text-decoration: none;
-    text-align: left;
 }
