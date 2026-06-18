@@ -1,26 +1,22 @@
-// Generative ambient synth pad — a soft, slowly evolving wintry drone.
-// No audio file: everything is synthesized live with the Web Audio API.
-// Lives in the shell (index.html). On/off, volume, and panel position all
-// persist in localStorage.
 (function () {
     'use strict';
 
     var KEY = 'ambientAudioOn';
-    var VOL_KEY = 'ambientVolume';   // slider value, 0-100
-    var POS_KEY = 'audioPanelPos';   // dragged panel position {left, top}
-    var MAX_GAIN = 0.5;              // master gain at volume 100
-    var NOTES = [130.81, 196.00, 246.94, 293.66, 392.00]; // open Cmaj9-ish chord (Hz)
+    var VOL_KEY = 'ambientVolume';
+    var POS_KEY = 'audioPanelPos';
+    var MAX_GAIN = 0.5;
+    var NOTES = [130.81, 196.00, 246.94, 293.66, 392.00];
 
     var ctx = null;
     var master = null;
-    var built = false;               // audio graph constructed
-    var on = false;                  // intended playing state
+    var built = false;
+    var on = false;
     var volume = clampVol(parseInt(localStorage.getItem(VOL_KEY), 10));
     var btn = null;
     var slider = null;
 
     function clampVol(v) {
-        if (isNaN(v)) return 40;     // default volume
+        if (isNaN(v)) return 40;
         return Math.max(0, Math.min(100, v));
     }
 
@@ -28,7 +24,6 @@
         return (volume / 100) * MAX_GAIN;
     }
 
-    // Procedural reverb: an impulse response of exponentially decaying noise.
     function makeReverbImpulse(seconds, decay) {
         var rate = ctx.sampleRate;
         var len = Math.floor(rate * seconds);
@@ -46,15 +41,13 @@
         ctx = new (window.AudioContext || window.webkitAudioContext)();
 
         master = ctx.createGain();
-        master.gain.value = 0; // silent until faded in
+        master.gain.value = 0;
         master.connect(ctx.destination);
 
-        // Soften the high end so the pad stays warm and distant.
         var lowpass = ctx.createBiquadFilter();
         lowpass.type = 'lowpass';
         lowpass.frequency.value = 1100;
 
-        // Wet/dry reverb mix for a spacious, snowy feel.
         var reverb = ctx.createConvolver();
         reverb.buffer = makeReverbImpulse(4, 3);
         var wet = ctx.createGain(); wet.gain.value = 0.6;
@@ -63,19 +56,17 @@
         lowpass.connect(dry); dry.connect(master);
         lowpass.connect(reverb); reverb.connect(wet); wet.connect(master);
 
-        // Each note is a voice that slowly swells in and out on its own LFO,
-        // so the chord never sits still.
         for (var n = 0; n < NOTES.length; n++) {
             var osc = ctx.createOscillator();
             osc.type = (n % 2 === 0) ? 'sine' : 'triangle';
             osc.frequency.value = NOTES[n];
-            osc.detune.value = Math.random() * 8 - 4; // gentle chorus
+            osc.detune.value = Math.random() * 8 - 4;
 
             var vGain = ctx.createGain();
-            vGain.gain.value = 0.08; // base level the LFO rides on top of
+            vGain.gain.value = 0.08;
 
             var lfo = ctx.createOscillator();
-            lfo.frequency.value = 0.03 + Math.random() * 0.05; // very slow drift
+            lfo.frequency.value = 0.03 + Math.random() * 0.05;
             var lfoGain = ctx.createGain();
             lfoGain.gain.value = 0.06;
             lfo.connect(lfoGain); lfoGain.connect(vGain.gain);
@@ -116,7 +107,7 @@
     function setVolume(v) {
         volume = clampVol(v);
         localStorage.setItem(VOL_KEY, String(volume));
-        if (on && built) fade(targetGain(), 0.1); // track the slider live
+        if (on && built) fade(targetGain(), 0.1);
     }
 
     function updateButton() {
@@ -125,7 +116,6 @@
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     }
 
-    // Drag the panel by its handle; clamp to the viewport; remember where.
     function makeDraggable(panel, handle) {
         function applyPos(left, top) {
             left = Math.max(0, Math.min(left, window.innerWidth - panel.offsetWidth));
@@ -139,7 +129,7 @@
         try {
             var p = JSON.parse(localStorage.getItem(POS_KEY));
             if (p) applyPos(p.left, p.top);
-        } catch (e) { /* no saved position */ }
+        } catch (e) {}
 
         var dragging = false, offX = 0, offY = 0;
         handle.addEventListener('pointerdown', function (e) {
@@ -178,14 +168,11 @@
         var handle = document.getElementById('audio-drag');
         if (panel && handle) makeDraggable(panel, handle);
 
-        // Autostart by default: play unless the visitor has explicitly paused before.
         var saved = localStorage.getItem(KEY);
         var wantOn = (saved === null) ? true : (saved === 'true');
 
         if (wantOn) {
-            // Try to start immediately (works for engaged/returning visitors). If the
-            // browser blocks autoplay, just leave it stopped — the button stays on
-            // "play" and one click starts it. No first-interaction ambush.
+            // autostart unless explicitly paused; stay stopped if autoplay is blocked
             if (!built) buildGraph();
             var settle = function () {
                 if (ctx.state === 'running') {

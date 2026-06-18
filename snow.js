@@ -1,5 +1,3 @@
-// Click a falling snowflake to dissolve it.
-// Runs inside each framed content page; harmless on pages with no snow.
 (function () {
     'use strict';
 
@@ -7,11 +5,13 @@
         var flake = e.target.closest && e.target.closest('.flake');
         if (!flake || flake.classList.contains('dissolving')) return;
 
-        flake.classList.add('dissolving'); // CSS fades + blurs it out
-        var remove = function () { flake.remove(); };
+        flake.classList.add('dissolving');
 
-        var img = flake.querySelector('img');
-        if (img) img.addEventListener('transitionend', remove, { once: true });
-        setTimeout(remove, 800); // safety net if transitionend doesn't fire
+        // re-form when the fall animation loops back to the top
+        flake.addEventListener('animationiteration', function reform(ev) {
+            if (ev.animationName && ev.animationName !== 'fall') return;
+            flake.classList.remove('dissolving');
+            flake.removeEventListener('animationiteration', reform);
+        });
     });
 })();

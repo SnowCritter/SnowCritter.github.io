@@ -10,7 +10,6 @@ a{
     text-decoration: none;
 }
 
-/* Persistent-audio shell (index.html): full-window iframe holds the pages */
 body.shell {
     margin: 0;
 }
@@ -23,12 +22,11 @@ body.shell {
     border: 0;
 }
 
-/* Falling snowflakes (Power page) */
 .snow {
     position: fixed;
     inset: 0;
-    overflow: hidden;      /* contains off-screen flakes; no scrollbars */
-    z-index: -1;           /* behind in-flow text, above the black body background */
+    overflow: hidden;
+    z-index: -1;   /* behind the text, above the black background */
     pointer-events: none;
 }
 
@@ -36,7 +34,7 @@ body.shell {
     position: absolute;
     top: 0;
     animation: fall linear infinite;
-    pointer-events: auto;   /* re-enable clicks (the .snow container disables them) */
+    pointer-events: auto;   /* re-enable clicks disabled by .snow */
     cursor: pointer;
 }
 
@@ -58,7 +56,7 @@ body.shell {
 
 @keyframes fall {
     from { transform: translate(0, -30vh); }
-    to   { transform: translate(-40vw, 110vh); }   /* straight diagonal: down + left together */
+    to   { transform: translate(-40vw, 110vh); }
 }
 
 @keyframes spin {
@@ -66,7 +64,6 @@ body.shell {
     to   { transform: rotate(360deg); }
 }
 
-/* Ambient audio panel (lives in the shell, draggable) */
 .audio-panel {
     position: fixed;
     bottom: 12px;

@@ -5,8 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
-    // If a content page is opened directly (not inside the shell iframe),
-    // bounce into the shell so the persistent audio + controls are present.
+    // if opened outside the shell iframe, bounce into the shell
     (function () {
         if (window.top === window.self) {
             var p = location.pathname;
