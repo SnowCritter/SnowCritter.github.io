@@ -9,3 +9,34 @@ a{
     color: aliceblue;
     text-decoration: none;
 }
+
+/* Falling snowflakes (Power page) */
+.snow {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;      /* contains off-screen flakes; no scrollbars */
+    z-index: -1;           /* behind in-flow text, above the black body background */
+    pointer-events: none;
+}
+
+.flake {
+    position: absolute;
+    top: 0;
+    animation: fall linear infinite;
+}
+
+.flake img {
+    display: block;
+    width: 100%;
+    animation: spin linear infinite;
+}
+
+@keyframes fall {
+    from { transform: translate(0, -30vh); }
+    to   { transform: translate(-40vw, 110vh); }   /* straight diagonal: down + left together */
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
