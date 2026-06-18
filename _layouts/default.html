@@ -4,13 +4,23 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+    // If a content page is opened directly (not inside the shell iframe),
+    // bounce into the shell so the persistent audio + controls are present.
+    (function () {
+        if (window.top === window.self) {
+            var p = location.pathname;
+            if (p !== '/' && p !== '/index.html') {
+                location.replace('/#' + p);
+            }
+        }
+    })();
+    </script>
     <title>{{ page.title }}</title>
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     {% include nav.html %}
     {{ content }}
-    <button id="audio-toggle" class="audio-toggle" aria-pressed="false">♪ sound off</button>
-    <script src="/audio.js" defer></script>
 </body>
 </html>

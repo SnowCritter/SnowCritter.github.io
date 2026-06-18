@@ -10,6 +10,19 @@ a{
     text-decoration: none;
 }
 
+/* Persistent-audio shell (index.html): full-window iframe holds the pages */
+body.shell {
+    margin: 0;
+}
+
+.shell-frame {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
 /* Falling snowflakes (Power page) */
 .snow {
     position: fixed;
