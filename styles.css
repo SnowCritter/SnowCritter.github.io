@@ -40,3 +40,23 @@ a{
     from { transform: rotate(0deg); }
     to   { transform: rotate(360deg); }
 }
+
+/* Ambient audio toggle (all pages) */
+.audio-toggle {
+    position: fixed;
+    bottom: 12px;
+    right: 16px;
+    z-index: 10;
+    background: transparent;
+    color: aliceblue;
+    border: 1px solid aliceblue;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font: inherit;
+    cursor: pointer;
+    opacity: 0.55;
+}
+
+.audio-toggle:hover {
+    opacity: 1;
+}
