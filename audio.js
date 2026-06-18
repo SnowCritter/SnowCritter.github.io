@@ -2,27 +2,16 @@
     'use strict';
 
     var KEY = 'ambientAudioOn';
-    var VOL_KEY = 'ambientVolume';
-    var POS_KEY = 'audioPanelPos';
-    var MAX_GAIN = 0.5;
+    var POS_KEY = 'audioTogglePos';
+    var TARGET = 0.2;
     var NOTES = [130.81, 196.00, 246.94, 293.66, 392.00];
 
     var ctx = null;
     var master = null;
     var built = false;
     var on = false;
-    var volume = clampVol(parseInt(localStorage.getItem(VOL_KEY), 10));
     var btn = null;
-    var slider = null;
-
-    function clampVol(v) {
-        if (isNaN(v)) return 40;
-        return Math.max(0, Math.min(100, v));
-    }
-
-    function targetGain() {
-        return (volume / 100) * MAX_GAIN;
-    }
+    var dragMoved = false;
 
     function makeReverbImpulse(seconds, decay) {
         var rate = ctx.sampleRate;
@@ -89,7 +78,7 @@
     function play() {
         if (!built) buildGraph();
         ctx.resume();
-        fade(targetGain(), 3);
+        fade(TARGET, 3);
         on = true;
         localStorage.setItem(KEY, 'true');
         updateButton();
@@ -102,28 +91,25 @@
         updateButton();
     }
 
-    function toggle() { on ? pause() : play(); }
-
-    function setVolume(v) {
-        volume = clampVol(v);
-        localStorage.setItem(VOL_KEY, String(volume));
-        if (on && built) fade(targetGain(), 0.1);
+    function toggle() {
+        if (dragMoved) { dragMoved = false; return; } // ignore the click that ends a drag
+        on ? pause() : play();
     }
 
     function updateButton() {
         if (!btn) return;
-        btn.textContent = on ? '⏸ pause' : '▶ play';
+        btn.textContent = on ? '♪ sound on' : '♪ sound off';
         btn.setAttribute('aria-pressed', on ? 'true' : 'false');
     }
 
-    function makeDraggable(panel, handle) {
+    function makeDraggable(el) {
         function applyPos(left, top) {
-            left = Math.max(0, Math.min(left, window.innerWidth - panel.offsetWidth));
-            top = Math.max(0, Math.min(top, window.innerHeight - panel.offsetHeight));
-            panel.style.left = left + 'px';
-            panel.style.top = top + 'px';
-            panel.style.right = 'auto';
-            panel.style.bottom = 'auto';
+            left = Math.max(0, Math.min(left, window.innerWidth - el.offsetWidth));
+            top = Math.max(0, Math.min(top, window.innerHeight - el.offsetHeight));
+            el.style.left = left + 'px';
+            el.style.top = top + 'px';
+            el.style.right = 'auto';
+            el.style.bottom = 'auto';
         }
 
         try {
@@ -131,42 +117,39 @@
             if (p) applyPos(p.left, p.top);
         } catch (e) {}
 
-        var dragging = false, offX = 0, offY = 0;
-        handle.addEventListener('pointerdown', function (e) {
+        var dragging = false, offX = 0, offY = 0, startX = 0, startY = 0;
+        el.addEventListener('pointerdown', function (e) {
             dragging = true;
-            var r = panel.getBoundingClientRect();
+            dragMoved = false;
+            var r = el.getBoundingClientRect();
             offX = e.clientX - r.left;
             offY = e.clientY - r.top;
-            handle.setPointerCapture(e.pointerId);
-            e.preventDefault();
+            startX = e.clientX;
+            startY = e.clientY;
+            el.setPointerCapture(e.pointerId);
         });
-        handle.addEventListener('pointermove', function (e) {
-            if (dragging) applyPos(e.clientX - offX, e.clientY - offY);
+        el.addEventListener('pointermove', function (e) {
+            if (!dragging) return;
+            if (!dragMoved && Math.abs(e.clientX - startX) < 4 && Math.abs(e.clientY - startY) < 4) return;
+            dragMoved = true;
+            applyPos(e.clientX - offX, e.clientY - offY);
         });
-        handle.addEventListener('pointerup', function (e) {
+        el.addEventListener('pointerup', function (e) {
             if (!dragging) return;
             dragging = false;
-            try { handle.releasePointerCapture(e.pointerId); } catch (e2) {}
-            var r = panel.getBoundingClientRect();
-            localStorage.setItem(POS_KEY, JSON.stringify({ left: r.left, top: r.top }));
+            try { el.releasePointerCapture(e.pointerId); } catch (e2) {}
+            if (dragMoved) {
+                var r = el.getBoundingClientRect();
+                localStorage.setItem(POS_KEY, JSON.stringify({ left: r.left, top: r.top }));
+            }
         });
     }
 
     function init() {
         btn = document.getElementById('audio-toggle');
-        if (btn) btn.addEventListener('click', toggle);
-
-        slider = document.getElementById('audio-volume');
-        if (slider) {
-            slider.value = volume;
-            slider.addEventListener('input', function () {
-                setVolume(parseInt(slider.value, 10));
-            });
-        }
-
-        var panel = document.getElementById('audio-panel');
-        var handle = document.getElementById('audio-drag');
-        if (panel && handle) makeDraggable(panel, handle);
+        if (!btn) return;
+        btn.addEventListener('click', toggle);
+        makeDraggable(btn);
 
         var saved = localStorage.getItem(KEY);
         var wantOn = (saved === null) ? true : (saved === 'true');
@@ -178,7 +161,7 @@
                 if (ctx.state === 'running') {
                     on = true;
                     localStorage.setItem(KEY, 'true');
-                    fade(targetGain(), 3);
+                    fade(TARGET, 3);
                 }
                 updateButton();
             };
