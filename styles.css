@@ -28,6 +28,7 @@ body.shell {
     overflow: hidden;
     z-index: -1;   /* behind the text, above the black background */
     pointer-events: none;
+    user-select: none;
 }
 
 .flake {

@@ -5,6 +5,7 @@
         var flake = e.target.closest && e.target.closest('.flake');
         if (!flake || flake.classList.contains('dissolving')) return;
 
+        e.preventDefault(); // stop the press from dropping a text caret on the flake
         flake.classList.add('dissolving');
 
         // re-form when the fall animation loops back to the top
@@ -13,5 +14,5 @@
             flake.classList.remove('dissolving');
             flake.removeEventListener('animationiteration', reform);
         });
-    });
+    }, { passive: false });
 })();
