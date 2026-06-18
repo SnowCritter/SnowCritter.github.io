@@ -9,7 +9,11 @@
 </head>
 <body class="shell">
     <iframe id="view" class="shell-frame" src="/center.html" title="Critter Site"></iframe>
-    <button id="audio-toggle" class="audio-toggle" aria-pressed="false">♪ sound off</button>
+    <div id="audio-panel" class="audio-panel">
+        <div id="audio-drag" class="audio-drag">⋮ audio ⋮</div>
+        <button id="audio-toggle" class="audio-toggle" aria-pressed="false">▶ play</button>
+        <input id="audio-volume" class="audio-volume" type="range" min="0" max="100" value="40" aria-label="Volume">
+    </div>
     <script src="/shell.js" defer></script>
     <script src="/audio.js" defer></script>
 </body>
