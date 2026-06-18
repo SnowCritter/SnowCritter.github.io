@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    document.addEventListener('click', function (e) {
+    document.addEventListener('pointerdown', function (e) {
         var flake = e.target.closest && e.target.closest('.flake');
         if (!flake || flake.classList.contains('dissolving')) return;
 

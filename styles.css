@@ -43,6 +43,9 @@ body.shell {
     width: 100%;
     animation: spin linear infinite;
     transition: opacity 0.6s ease, filter 0.6s ease;
+    user-select: none;
+    -webkit-user-drag: none;   /* stop the native image ghost-drag */
+    pointer-events: none;      /* clicks target the .flake, never the img */
 }
 
 .flake.dissolving {
