@@ -69,7 +69,7 @@ body.shell {
 
 .audio-toggle {
     position: fixed;
-    bottom: 12px;
+    top: 150px;
     right: 16px;
     z-index: 10;
     background: transparent;
